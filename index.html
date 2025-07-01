@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: #fefefe;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #2d4a2b;
+            margin-bottom: 20px;
+            font-weight: normal;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .collection-viewer {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .bib-container {
+            position: relative;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+            transition: all 0.4s ease;
+        }
+
+        .bib-image {
+            width: 100%;
+            height: 350px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            border: 2px dashed #ddd;
+            transition: border-color 0.3s ease;
+        }
+
+        .bib-image:hover {
+            border-color: #c53030;
+        }
+
+        .bib-placeholder {
+            color: #999;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .race-info {
+            text-align: center;
+        }
+
+        .race-name {
+            font-size: 1.8rem;
+            color: #2d4a2b;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .race-date {
+            color: #c53030;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .race-time {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .race-details {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .detail {
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .race-notes {
+            color: #555;
+            font-style: italic;
+            max-width: 400px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 2px solid #c53030;
+            color: #c53030;
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .nav-btn:hover {
+            background: #c53030;
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            border-color: #ddd;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:disabled:hover {
+            background: none;
+            color: #999;
+        }
+
+        .race-counter {
+            color: #d4a953;
+            font-size: 1rem;
+            font-weight: 500;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .collection-summary {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #eee;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: #2d4a2b;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .bib-container {
+                padding: 20px;
+            }
+            
+            .bib-image {
+                height: 280px;
+            }
+            
+            .race-details {
+                gap: 20px;
+            }
+            
+            .navigation {
+                gap: 20px;
+            }
+            
+            .summary-stats {
+                gap: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Running Collection</h1>
+            <p class="subtitle">A personal archive of miles and memories</p>
+        </div>
+
+        <div class="collection-viewer">
+            <div class="bib-container" id="currentRace">
+                <div class="bib-image" id="bibImage">
+                    <div class="bib-placeholder">
+                        Click to upload your race bib image<br>
+                        <small style="color: #ccc; margin-top: 10px; display: block;">JPG, PNG, or GIF</small>
+                    </div>
+                </div>
+                
+                <div class="race-info">
+                    <h2 class="race-name" id="raceName">Central Park 5K</h2>
+                    <div class="race-date" id="raceDate">March 15, 2024</div>
+                    <div class="race-time" id="raceTime">22:34</div>
+                    
+                    <div class="race-details">
+                        <div class="detail">
+                            <div class="detail-label">Place</div>
+                            <div class="detail-value" id="racePlace">45/200</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Pace</div>
+                            <div class="detail-value" id="racePace">7:15/mi</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Distance</div>
+                            <div class="detail-value" id="raceDistance">5K</div>
+                        </div>
+                    </div>
+                    
+                    <p class="race-notes" id="raceNotes">
+                        Perfect weather conditions! Personal best by 30 seconds. The training really paid off.
+                    </p>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-btn" id="prevBtn" onclick="previousRace()">← Previous</button>
+                <div class="race-counter">
+                    <span id="currentIndex">1</span> of <span id="totalRaces">5</span>
+                </div>
+                <button class="nav-btn" id="nextBtn" onclick="nextRace()">Next →</button>
+            </div>
+        </div>
+
+        <div class="collection-summary">
+            <div class="summary-stats">
+                <div class="stat">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">Races</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">62.1</span>
+                    <span class="stat-label">Total Miles</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">18:45</span>
+                    <span class="stat-label">Best 5K</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const races = [
+            {
+                name: "Central Park 5K",
+                date: "March 15, 2024",
+                time: "22:34",
+                place: "45/200",
+                pace: "7:15/mi",
+                distance: "5K",
+                notes: "Perfect weather conditions! Personal best by 30 seconds. The training really paid off.",
+                bibImage: null
+            },
+            {
+                name: "Brooklyn Half Marathon",
+                date: "May 18, 2024",
+                time: "1:45:22",
+                place: "234/1500",
+                pace: "8:02/mi",
+                distance: "13.1 mi",
+                notes: "First half marathon! Tough course but amazing crowd support. Hit the wall at mile 10 but pushed through.",
+                bibImage: null
+            },
+            {
+                name: "Turkey Trot 10K",
+                date: "November 28, 2024",
+                time: "38:45",
+                place: "67/300",
+                pace: "6:15/mi",
+                distance: "10K",
+                notes: "Cold morning but felt strong throughout. Great way to start Thanksgiving Day!",
+                bibImage: null
+            },
+            {
+                name: "Summer Solstice 5 Miler",
+                date: "June 21, 2024",
+                time: "32:15",
+                place: "23/150",
+                pace: "6:27/mi",
+                distance: "5 mi",
+                notes: "Evening race with beautiful sunset views. Felt like flying on the last mile.",
+                bibImage: null
+            },
+            {
+                name: "City Marathon",
+                date: "October 8, 2024",
+                time: "3:42:18",
+                place: "892/5000",
+                pace: "8:29/mi",
+                distance: "26.2 mi",
+                notes: "The big one! Mental battle from mile 18 onward. Incredible sense of achievement crossing that finish line.",
+                bibImage: null
+            }
+        ];
+
+        let currentRaceIndex = 0;
+
+        function displayRace(index) {
+            const race = races[index];
+            const container = document.getElementById('currentRace');
+            
+            container.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                document.getElementById('raceName').textContent = race.name;
+                document.getElementById('raceDate').textContent = race.date;
+                document.getElementById('raceTime').textContent = race.time;
+                document.getElementById('racePlace').textContent = race.place;
+                document.getElementById('racePace').textContent = race.pace;
+                document.getElementById('raceDistance').textContent = race.distance;
+                document.getElementById('raceNotes').textContent = race.notes;
+                
+                // Handle bib image
+                const bibImage = document.getElementById('bibImage');
+                if (race.bibImage) {
+                    bibImage.innerHTML = `<img src="${race.bibImage}" alt="Race bib" style="width: 100%; height: 100%; object-fit: contain; border-radius: 4px;">`;
+                } else {
+                    bibImage.innerHTML = `
+                        <div class="bib-placeholder">
+                            Click to upload your race bib image<br>
+                            <small style="color: #ccc; margin-top: 10px; display: block;">JPG, PNG, or GIF</small>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('currentIndex').textContent = index + 1;
+                document.getElementById('totalRaces').textContent = races.length;
+                
+                // Update navigation buttons
+                document.getElementById('prevBtn').disabled = index === 0;
+                document.getElementById('nextBtn').disabled = index === races.length - 1;
+                
+                container.classList.add('fade-in');
+            }, 100);
+        }
+
+        function nextRace() {
+            if (currentRaceIndex < races.length - 1) {
+                currentRaceIndex++;
+                displayRace(currentRaceIndex);
+            }
+        }
+
+        function previousRace() {
+            if (currentRaceIndex > 0) {
+                currentRaceIndex--;
+                displayRace(currentRaceIndex);
+            }
+        }
+
+        // Image upload functionality
+        document.getElementById('bibImage').addEventListener('click', function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        races[currentRaceIndex].bibImage = e.target.result;
+                        displayRace(currentRaceIndex);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                previousRace();
+            } else if (e.key === 'ArrowRight') {
+                nextRace();
+            }
+        });
+
+        // Initialize
+        displayRace(0);
+    </script>
+</body>
+</html>
